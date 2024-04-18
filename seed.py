@@ -2,8 +2,15 @@
 from config import client
 
 
-print('adding inventory')    
+
 db = client.PRACTICE_DB
+
+
+print('deleting old inventory...')
+db.inventory.delete_many({})
+
+print('adding new inventory...')    
+
 db.inventory.insert_many(
     [
         {
@@ -38,7 +45,7 @@ db.inventory.insert_many(
         },
     ]
 )
-print(db.inventory.find({}))
+
 
     
 
