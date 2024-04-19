@@ -26,20 +26,30 @@ def home():
 
 @app.route('/inv/<string:page_id>')
 def page(page_id):
-    print(page_id)
-    cursor = db.inventory.find({'_id': ObjectId(page_id)})
-    results = list(cursor)
-    if len(results) == 0:
-        return {"errors": "Not found"}, 404
-    else:
-        dict = results[0]
-        response_body = {
-            'item': dict['item'],
-            'qty': dict['qty'],
-            "id": str(ObjectId(dict['_id']))
-        }
+    
+    # cursor = db.inventory.find({'_id': ObjectId(page_id)})
+    # results = list(cursor)
+    # if len(results) == 0:
+    #     return {"errors": "Not found"}, 404
+    # else:
+    #     dict = results[0]
+    #     response_body = {
+    #         'item': dict['item'],
+    #         'qty': dict['qty'],
+    #         'size': dict['size'],
+    #         "id": str(ObjectId(dict['_id']))
+    #     }
         
-        return response_body, 200
+    #     return response_body, 200
+
+    result = db.inventory.find_one({'_id': ObjectId(page_id)})
+    if not result:
+        return {"errors": "Not found"}, 404
+    result['_id'] = str(result['_id'])
+   
+    return result, 200
+
+
 
 
 if __name__ == '__main__': 
