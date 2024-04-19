@@ -41,8 +41,12 @@ def page(page_id):
     #     }
         
     #     return response_body, 200
-
-    result = db.inventory.find_one({'_id': ObjectId(page_id)})
+    try:
+        result = db.inventory.find_one({'_id': ObjectId(page_id)})
+        
+    except:
+        return {"errors": "Not found"}, 404
+    
     if not result:
         return {"errors": "Not found"}, 404
     result['_id'] = str(result['_id'])
