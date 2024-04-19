@@ -13,8 +13,15 @@ db = client.PRACTICE_DB
     
 #     print(str(item['_id']))
 
-result = db.inventory.find_one({
-    "_id": ObjectId("66216367815b33209271c611")
-})
-# print(len(list(cursor)))
-print(result)
+
+
+
+# result = db.inventory.find_one({
+#     "_id": ObjectId("66216367815b33209271c611")
+# })
+
+# print(result)
+
+
+count = db.inventory.count_documents({})
+print(count)

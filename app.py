@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import os
 from config import app, client
@@ -24,6 +24,24 @@ except Exception as e:
 def home():
     return jsonify({"data": "hello world"})
 
+@app.route('/users', methods=['POST'])
+def users():
+    json = request.get_json()
+
+    result = db.users.insert_one({
+        'name': json['name'],
+        'age': json['age']
+    })
+    
+    response = db.users.find_one({'_id': result.inserted_id})
+    response['_id'] = str(response['_id'])
+
+    return response, 201
+
+
+
+
+
 @app.route('/inv/<string:page_id>')
 def page(page_id):
     
@@ -43,7 +61,7 @@ def page(page_id):
     #     return response_body, 200
     try:
         result = db.inventory.find_one({'_id': ObjectId(page_id)})
-        
+
     except:
         return {"errors": "Not found"}, 404
     
