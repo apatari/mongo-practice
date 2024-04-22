@@ -38,7 +38,24 @@ def users():
 
     return response, 201
 
+@app.route('/users/<string:user_id>', methods=['PATCH'])
+def users_update(user_id):
+    json = request.get_json()
+    try:
+        user = {
+            'name': json['name'],
+            'age': json['age']
+        }
 
+        result = db.users.update_one({'_id': ObjectId(user_id)}, {"$set": user})
+
+        response = db.users.find_one({'_id': ObjectId(user_id)})
+        response['_id'] = str(response['_id'])
+
+        return response, 201
+    
+    except Exception as err:
+        return {"errors": [str(err)]}, 422
 
 
 
