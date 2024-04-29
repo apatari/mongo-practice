@@ -32,12 +32,12 @@ def users():
     #unique name validation
     user = db.users.find_one({"name": json['name']})
     if user:
-        return {"errors": ["Name already regeistered"]}
+        return {"errors": ["Name already regeistered"]}, 422
 
     # Password hashing
     hashed_password = generate_password_hash(json['password'])
 
-    # Add the user tot he db
+    # Add the user to the db
     result = db.users.insert_one({
         'name': json['name'],
         'age': json['age'],
