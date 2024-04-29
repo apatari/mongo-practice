@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import os
 from config import app, client
+from passCheck import pass_strong
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -33,6 +34,13 @@ def users():
     user = db.users.find_one({"name": json['name']})
     if user:
         return {"errors": ["Name already regeistered"]}, 422
+    
+    # verify password strength
+    if len(json['password']) < 8:
+        return {"errors:": ["Password must be 8 or more characters"]}, 422
+    
+    if not pass_strong(json['password']):
+        return {"errors": ["Password must contain uppercase, lowercase, number, and special character"]}, 422
 
     # Password hashing
     hashed_password = generate_password_hash(json['password'])
