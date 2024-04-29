@@ -6,10 +6,11 @@ from config import app, client
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
 
-db = client.PRACTICE_DB
+db = client.TEST_DB
 
 # Send a ping to confirm a successful connection
 try:
@@ -28,9 +29,12 @@ def home():
 def users():
     json = request.get_json()
 
+    hashed_password = generate_password_hash(json['password'])
+
     result = db.users.insert_one({
         'name': json['name'],
-        'age': json['age']
+        'age': json['age'],
+        'password': hashed_password
     })
     
     response = db.users.find_one({'_id': result.inserted_id})
