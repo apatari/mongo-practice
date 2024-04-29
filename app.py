@@ -29,6 +29,10 @@ def home():
 def users():
     json = request.get_json()
 
+    user = db.users.find_one({"name": json['name']})
+    if user:
+        return {"errors": ["Name already regeistered"]}
+
     hashed_password = generate_password_hash(json['password'])
 
     result = db.users.insert_one({
