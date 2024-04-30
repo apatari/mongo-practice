@@ -2,12 +2,14 @@ from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import os
 from config import app, client
-from passCheck import pass_strong
+from passCheck import pass_strong as isStrongPassword
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from email_validator import validate_email, EmailNotValidError
 
 load_dotenv()
 
@@ -35,11 +37,22 @@ def users():
     if user:
         return {"errors": ["Name already regeistered"]}, 422
     
+    # email validation
+    email = json['email']
+
+    try:
+        emailInfo = validate_email(email, check_deliverability=False)
+        email = emailInfo.normalized
+    
+    except EmailNotValidError as err:
+        # return the email error as a readable string
+        return {"errors": [str(err)]}
+    
     # verify password strength
     if len(json['password']) < 8:
         return {"errors:": ["Password must be 8 or more characters"]}, 422
     
-    if not pass_strong(json['password']):
+    if not isStrongPassword(json['password']):
         return {"errors": ["Password must contain uppercase, lowercase, number, and special character"]}, 422
 
     # Password hashing
@@ -48,7 +61,7 @@ def users():
     # Add the user to the db
     result = db.users.insert_one({
         'name': json['name'],
-        'age': json['age'],
+        'email': email,
         'password': hashed_password
     })
     
